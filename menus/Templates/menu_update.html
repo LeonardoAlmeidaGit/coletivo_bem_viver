@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Cardápio - Coletivo Bem Viver{% endblock %}
+
+{% block content %}
+
+<section class="py-10 px-4">
+    <div class="max-w-5xl mx-auto">
+
+        <div class="mb-6">
+            <a href="{% url 'menu_list' kitchen.pk %}" class="text-gray-400 hover:text-primary-600 text-base transition-colors duration-200">
+                ← Voltar aos cardápios
+            </a>
+            <h1 class="text-4xl font-bold text-gray-800 mt-2">Editar Cardápio</h1>
+            <p class="text-gray-500 text-lg mt-1">{{ object.date|date:"d/m/Y" }}</p>
+        </div>
+
+        <!-- Card pequeno de data -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div class="px-6 py-4 flex flex-wrap items-center gap-6">
+                <form method="post" class="flex flex-wrap items-center gap-4 flex-grow">
+                    {% csrf_token %}
+                    <div class="flex items-center gap-3">
+                        <label class="text-gray-700 font-semibold text-base whitespace-nowrap">
+                            Data do cardápio:
+                        </label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <p class="text-red-500 text-sm">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-gray-700 font-semibold text-base cursor-pointer">
+                            {{ form.active }}
+                            Ativo
+                        </label>
+                    </div>
+                    <button type="submit"
+                            class="bg-primary-600 text-white hover:bg-primary-700 font-semibold text-base px-6 py-2 rounded-lg transition-colors duration-200 whitespace-nowrap">
+                        Salvar
+                    </button>
+                </form>
+                <a href="{% url 'menu_delete' object.pk %}"
+                   class="bg-red-50 text-red-500 hover:bg-red-100 font-semibold text-base px-5 py-2 rounded-lg transition-colors duration-200 whitespace-nowrap">
+                    Excluir cardápio
+                </a>
+            </div>
+        </div>
+
+        <!-- Card principal dos itens -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-yellow-500 px-8 py-5 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Itens do cardápio</h2>
+                    <p class="text-yellow-100 text-base mt-1">{{ items.count }} item(s) cadastrado(s)</p>
+                </div>
+                <a href="{% url 'menuitem_create' object.pk %}"
+                   class="bg-white text-yellow-600 hover:bg-yellow-50 font-semibold text-base px-5 py-2 rounded-lg transition-colors duration-200">
+                    + Adicionar item
+                </a>
+            </div>
+
+            <div class="p-8">
+                {% if items %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for item in items %}
+                            <div class="flex flex-col bg-gray-50 rounded-xl border border-gray-100 overflow-hidden">
+                                {% if item.photo %}
+                                    <img src="{{ item.photo.url }}" alt="{{ item.name }}"
+                                         class="w-full h-40 object-cover">
+                                {% else %}
+                                    <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                                <div class="p-4 flex flex-col flex-grow">
+                                    <p class="font-semibold text-gray-800 text-base">{{ item.name }}</p>
+                                    {% if item.description %}
+                                        <p class="text-gray-400 text-sm mt-1 flex-grow">{{ item.description }}</p>
+                                    {% endif %}
+                                    <div class="flex items-center gap-2 mt-4">
+                                        <a href="{% url 'menuitem_update' object.pk item.pk %}"
+                                           class="flex-1 text-center bg-primary-50 text-primary-600 hover:bg-primary-100 text-sm font-medium px-3 py-2 rounded-lg transition-colors duration-200">
+                                            Editar
+                                        </a>
+                                        <a href="{% url 'menuitem_delete' object.pk item.pk %}"
+                                           class="flex-1 text-center bg-red-50 text-red-500 hover:bg-red-100 text-sm font-medium px-3 py-2 rounded-lg transition-colors duration-200">
+                                            Remover
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-16">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <p class="text-gray-400 text-lg">Nenhum item cadastrado ainda</p>
+                        <a href="{% url 'menuitem_create' object.pk %}"
+                           class="inline-block mt-4 bg-primary-600 text-white hover:bg-primary-700 font-semibold text-base px-6 py-3 rounded-lg transition-colors duration-200">
+                            Adicionar primeiro item
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    input[type="date"] {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        color: #1f2937;
+        background-color: #f9fafb;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+
+    input[type="date"]:focus {
+        border-color: #16a34a;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    input[type="checkbox"] {
+        width: 1.1rem;
+        height: 1.1rem;
+        cursor: pointer;
+        accent-color: #16a34a;
+    }
+</style>
+{% endblock %}

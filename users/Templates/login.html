@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Entrar - Coletivo Bem Viver{% endblock %}
+
+{% block content %}
+
+<section class="min-h-screen bg-gray-50 flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-md">
+
+        <!-- Card do formulário -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
+
+            <!-- Cabeçalho -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Bem-vinda de volta</h1>
+                <p class="text-gray-500 mt-2 text-lg">Acesse o painel da sua cozinha</p>
+            </div>
+
+            <!-- Formulário -->
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2 text-lg">
+                        Usuário
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2 text-lg">
+                        Senha
+                    </label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-lg text-base">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
+
+                <button type="submit"
+                        class="w-full bg-primary-600 text-white hover:bg-primary-700 font-semibold text-lg py-3 rounded-lg transition-colors duration-200 mt-2">
+                    Entrar
+                </button>
+            </form>
+
+            <!-- Divisor -->
+            <div class="flex items-center gap-4 my-8">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="text-gray-400 text-base">ou</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <!-- Link para cadastro -->
+            <div class="text-center">
+                <p class="text-gray-500 text-base mb-3">Ainda não tem acesso ao painel?</p>
+                <a href="{% url 'cadastro' %}"
+                   class="inline-block w-full border-2 border-teal-600 text-teal-600 hover:bg-teal-50 font-semibold text-lg py-3 rounded-lg transition-colors duration-200 text-center">
+                    Quero cadastrar minha cozinha
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Link voltar -->
+        <p class="text-center mt-6 text-gray-400 text-base">
+            <a href="{% url 'home' %}" class="hover:text-primary-600 transition-colors duration-200">
+                ← Voltar para a página inicial
+            </a>
+        </p>
+
+    </div>
+</section>
+
+{% endblock %}

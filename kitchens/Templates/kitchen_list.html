@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Cozinhas - Coletivo Bem Viver{% endblock %}
+
+{% block content %}
+
+<section class="py-16 px-4">
+    <div class="max-w-6xl mx-auto">
+
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800">Cozinhas Comunitárias</h1>
+                <p class="text-gray-500 text-lg mt-2">
+                    {{ kitchens|length }} unidade{% if kitchens|length != 1 %}s{% endif %} encontrada{% if kitchens|length != 1 %}s{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div id="map" style="height: 420px; width: 100%;"></div>
+        </div>
+
+        <!-- Campo de busca -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+            <div class="p-6">
+                <form method="get" class="flex gap-3 items-center">
+                    <div class="flex-grow relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <input type="text"
+                               name="address"
+                               value="{{ search_address }}"
+                               placeholder="Digite seu endereço para encontrar cozinhas próximas..."
+                               class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-base text-gray-700 bg-gray-50 focus:outline-none focus:border-primary-500 focus:bg-white transition-colors duration-200">
+                    </div>
+                    <button type="submit"
+                            class="bg-primary-600 text-white hover:bg-primary-700 font-semibold text-base px-6 py-3 rounded-xl transition-colors duration-200 whitespace-nowrap">
+                        Buscar
+                    </button>
+                    {% if search_address %}
+                        <a href="{% url 'kitchen_list' %}"
+                           class="border border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold text-base px-5 py-3 rounded-xl transition-colors duration-200 whitespace-nowrap">
+                            Limpar
+                        </a>
+                    {% endif %}
+                </form>
+
+                {% if search_address %}
+                    <p class="text-gray-400 text-sm mt-3">
+                        Exibindo cozinhas mais próximas de: <span class="text-gray-600 font-medium">{{ search_address }}</span>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Lista de cozinhas -->
+        {% if kitchens %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for kitchen in kitchens %}
+                    <a href="{% url 'kitchen_detail' kitchen.pk %}"
+                       class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+
+                        {% if kitchen.photo %}
+                            <img src="{{ kitchen.photo.url }}" alt="{{ kitchen.name }}"
+                                 class="w-full h-48 object-cover">
+                        {% else %}
+                            <div class="w-full h-48 bg-primary-50 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                            </div>
+                        {% endif %}
+
+                        <div class="p-6">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <h2 class="text-xl font-bold text-gray-800 leading-tight">{{ kitchen.name }}</h2>
+                                <span class="flex-shrink-0 px-3 py-1 rounded-full text-sm font-medium
+                                    {% if kitchen.status == 'active' %}bg-green-100 text-green-700
+                                    {% else %}bg-red-100 text-red-700{% endif %}">
+                                    {% if kitchen.status == 'active' %}Ativa{% else %}Inativa{% endif %}
+                                </span>
+                            </div>
+                            <p class="text-gray-500 text-base">{{ kitchen.neighborhood }}, {{ kitchen.city }}</p>
+                            {% if kitchen.contact_person %}
+                                <p class="text-gray-400 text-sm mt-1">Responsável: {{ kitchen.contact_person }}</p>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-24">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+                <p class="text-gray-400 text-xl">Nenhuma cozinha encontrada para esse endereço.</p>
+                <a href="{% url 'kitchen_list' %}" class="inline-block mt-4 text-primary-600 hover:underline text-base">
+                    Ver todas as cozinhas
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+{{ kitchens_json|json_script:"kitchens-data" }}
+
+<script>
+    const kitchens = JSON.parse(document.getElementById('kitchens-data').textContent) || [];
+
+    window.initMap = function() {
+        const defaultCenter = { lat: -3.71722, lng: -38.5433 };
+
+        const center = kitchens.length > 0
+            ? { lat: kitchens[0].lat, lng: kitchens[0].lng }
+            : defaultCenter;
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: center,
+            styles: [
+                { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }
+            ]
+        });
+
+        const infoWindow = new google.maps.InfoWindow();
+
+        kitchens.forEach(kitchen => {
+            const marker = new google.maps.Marker({
+                position: { lat: kitchen.lat, lng: kitchen.lng },
+                map: map,
+                title: kitchen.name,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: kitchen.status === 'active' ? '#16a34a' : '#ef4444',
+                    fillOpacity: 1,
+                    strokeColor: '#fff',
+                    strokeWeight: 2,
+                    scale: 10
+                }
+            });
+
+            marker.addListener("click", () => {
+                infoWindow.setContent(`
+                    <div style="padding: 4px 6px;">
+                        <p style="font-weight: bold; font-size: 14px; margin-bottom: 2px;">${kitchen.name}</p>
+                        <p style="color: #6b7280; font-size: 13px; margin-bottom: 6px;">${kitchen.address}</p>
+                        <a href="${kitchen.url}" style="color: #16a34a; font-size: 13px; font-weight: 600;">Ver detalhes →</a>
+                    </div>
+                `);
+                infoWindow.open(map, marker);
+            });
+        });
+
+        if (kitchens.length > 1) {
+            const bounds = new google.maps.LatLngBounds();
+            kitchens.forEach(k => bounds.extend({ lat: k.lat, lng: k.lng }));
+            map.fitBounds(bounds);
+        }
+    }
+</script>
+
+<script
+    src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap"
+    async defer>
+</script>
+
+{% endblock %}
