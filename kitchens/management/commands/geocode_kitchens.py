@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from kitchens.models import Kitchen
 from api.google_maps import get_coordinates
 
+
 class Command(BaseCommand):
     help = 'Geocodifica cozinhas sem latitude/longitude'
 

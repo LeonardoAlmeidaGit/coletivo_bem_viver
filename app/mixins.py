@@ -3,7 +3,7 @@ from django.core.exceptions import PermissionDenied
 
 
 class KitchenOwnerMixin(LoginRequiredMixin):
-    
+
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 

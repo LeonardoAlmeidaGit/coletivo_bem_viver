@@ -1,6 +1,7 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from app.mixins import KitchenOwnerMixin
 from kitchens.models import Kitchen
 from . import models, forms
@@ -18,14 +19,14 @@ class NoticeListView(ListView):
         if kitchen_id is not None:
             return models.Notice.objects.filter(kitchen_id=kitchen_id)
         return models.Notice.objects.none()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['kitchen'] = get_object_or_404(Kitchen, pk=self.kwargs.get('kitchen_id'))
         return context
 
 
-class NoticeCreateView(KitchenOwnerMixin, CreateView):
+class NoticeCreateView(LoginRequiredMixin, CreateView):
     model = models.Notice
     template_name = 'notice_create.html'
     form_class = forms.NoticeForm
@@ -52,7 +53,7 @@ class NoticeUpdateView(KitchenOwnerMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['kitchen'] = self.request.user.kitchen
         return context
-    
+
     def get_success_url(self):
         return reverse('notice_list', kwargs={'kitchen_id': self.request.user.kitchen.pk})
 

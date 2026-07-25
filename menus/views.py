@@ -1,8 +1,8 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import inlineformset_factory
-from django.shortcuts import redirect ,get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from app.mixins import KitchenOwnerMixin
 from kitchens.models import Kitchen
 from menus.models import Menu, MenuItem
@@ -29,7 +29,7 @@ class MenuListView(ListView):
         if kitchen_id is not None:
             return models.Menu.objects.filter(kitchen_id=kitchen_id)
         return models.Menu.objects.none()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['kitchen'] = get_object_or_404(Kitchen, pk=self.kwargs.get('kitchen_id'))
@@ -45,11 +45,11 @@ class MenuCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['kitchen'] = self.request.user.kitchen
         return context
-    
+
     def form_valid(self, form):
         form.instance.kitchen = self.request.user.kitchen
         return super().form_valid(form)
-    
+
     def get_success_url(self):
         return reverse('menu_update', kwargs={'pk': self.object.pk})
 
@@ -77,7 +77,7 @@ class MenuDeleteView(KitchenOwnerMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['kitchen'] = self.request.user.kitchen
         return context
-    
+
     def get_success_url(self):
         return reverse('menu_list', kwargs={'kitchen_id': self.request.user.kitchen.pk})
 

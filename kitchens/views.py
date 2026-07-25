@@ -1,11 +1,9 @@
-import json
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from . import models, forms
 from .models import Kitchen
@@ -27,7 +25,7 @@ class KitchenListView(ListView):
 
     def get_queryset(self):
         return models.Kitchen.objects.all()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         address = self.request.GET.get('address', '').strip()
@@ -35,11 +33,7 @@ class KitchenListView(ListView):
 
         if address:
             result = get_nearby_kitchens(address, kitchens)
-            
-            if result and isinstance(result[0], tuple):
-                kitchens = [item[0] for item in result]
-            else:
-                kitchens = result
+            kitchens = result
 
         kitchens_data = []
         for k in kitchens:
@@ -49,15 +43,15 @@ class KitchenListView(ListView):
                     'address': f'{k.neighborhood}, {k.city}',
                     'lat': float(str(k.latitude)),
                     'lng': float(str(k.longitude)),
-                    'url': f'/kitchens/{k.pk}/',
-                    'status': str(k.status),
+                    'url': reverse('kitchen_detail', args=[k.pk]),
+                    'status': 'active' if k.status else 'inactive',
                 })
 
         context['kitchens'] = kitchens
         context['kitchens_json'] = kitchens_data
         context['search_address'] = address
         context['google_maps_api_key'] = settings.GOOGLE_MAPS_API_KEY
-    
+
         return context
 
 
@@ -74,7 +68,7 @@ class KitchenCreateView(CreateView):
             messages.info(request, 'Você já possui uma cozinha cadastrada.')
             return redirect('kitchen_update', pk=kitchen.pk)
         return super().get(request, *args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
         kitchen = Kitchen.objects.filter(user=request.user).first()
         if kitchen:

@@ -31,7 +31,7 @@ def get_coordinates(address: str) -> dict | None:
         return None
 
     except requests.exceptions.RequestException:
-       
+
         return None
 
 

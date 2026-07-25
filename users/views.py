@@ -7,13 +7,13 @@ from .forms import LoginForm
 def login_view(request):
     if request.user.is_authenticated:
         return _redirect_after_login(request.user)
-    
+
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.sucess(request, f'Bem-vindo(a), {user.username}')
+            messages.success(request, f'Bem-vindo(a), {user.username}')
             return _redirect_after_login(user)
         else:
             messages.error(request, 'Usuário ou senha inválidos')
@@ -25,7 +25,7 @@ def login_view(request):
 def _redirect_after_login(user):
     if user.is_superuser:
         return redirect('home')
-    try: 
+    try:
         kitchen = user.kitchen
         return redirect('kitchen_update', pk=kitchen.pk)
     except Exception:

@@ -78,9 +78,9 @@
                             <div class="flex items-start justify-between gap-3 mb-3">
                                 <h2 class="text-xl font-bold text-gray-800 leading-tight">{{ kitchen.name }}</h2>
                                 <span class="flex-shrink-0 px-3 py-1 rounded-full text-sm font-medium
-                                    {% if kitchen.status == 'active' %}bg-green-100 text-green-700
+                                    {% if kitchen.status %}bg-green-100 text-green-700
                                     {% else %}bg-red-100 text-red-700{% endif %}">
-                                    {% if kitchen.status == 'active' %}Ativa{% else %}Inativa{% endif %}
+                                    {% if kitchen.status %}Ativa{% else %}Inativa{% endif %}
                                 </span>
                             </div>
                             <p class="text-gray-500 text-base">{{ kitchen.neighborhood }}, {{ kitchen.city }}</p>

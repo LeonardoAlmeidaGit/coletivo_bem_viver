@@ -3,7 +3,7 @@ from . import models
 
 
 class KitchenForm(forms.ModelForm):
-    
+
     class Meta:
         model = models.Kitchen
         fields = ['name', 'address', 'neighborhood', 'city', 'phone', 'opening_hours', 'description', 'photo']
